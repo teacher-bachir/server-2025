@@ -27,7 +27,10 @@ let products = [
 // /products?sort=name
 // /products?sort=price
 // /products?sort=id
-export const getAllProducts = (req, res) => {
+export const getAllProducts = (req, res, next) => {
+    // כאן ניתן לקבל את כל הנתונים שצורפו לבקשה דרך המידלוואר
+    console.log('getAllProducts', req.user2, req.currentDate3);
+
     // req.query - פרמטרים אופציונליים
     // const sort = req.query.sort;
     const { sort } = req.query;
@@ -52,23 +55,26 @@ export const getAllProducts = (req, res) => {
 
     // res.json - שליחת אוביקט ללקוח
     // בד"כ נשתמש בו
-    res.json(newP);
+    return res.json(newP);
 };
 
-export const getProductById = (req, res) => {
+export const getProductById = (req, res, next) => {
     const id = +req.params.id;
     const p = products.find(p => p.id === id);
 
     // עדיף לטפל קודם כל בשגיאות
     if (!p) {
-        res.status(404).json({ message: 'product not found' });
+        return next({
+            error: new Error(`product ${id} not found!`),
+            status: 404
+        });
     }
     else {
         res.json(p);
     }
 };
 
-export const addProduct = (req, res) => {
+export const addProduct = (req, res, next) => {
     // console.log(req.body); // כל מה שנשלח בבאדי
 
     // const p = { id: Date.now(), name: req.body.name, price: req.body.price };
@@ -87,7 +93,7 @@ export const addProduct = (req, res) => {
 // http://loalhost:5000/products/10
 // http://loalhost:5000/products/11
 // http://loalhost:5000/products/200
-export const updateProduct = (req, res) => {
+export const updateProduct = (req, res, next) => {
     // req.params - URL-אוביקט שמכיל את כל המפתחות והערכים שנשלחו ב
     // הערכים נשלחים תמיד כמחרוזת
 
@@ -95,31 +101,42 @@ export const updateProduct = (req, res) => {
 
     const product = products.find(p => p.id === id);
 
-    if (!product) // לא מצא מוצר עם קוד כזה
-    {
-        return res.status(404).json({ error: 'product not found' })
+    if (!product) { // לא מצא מוצר עם קוד כזה
+        return next({
+            error: new Error(`product ${id} not found!`),
+            status: 404
+        });
     }
 
     // עדכון רק אם נשלח הערך - default value
     // product.name =  req.body.name ? req.body.name : product.name;
-    product.name =  req.body.name || product.name;  // false -> 0/''/false/undefined/null
+    product.name = req.body.name || product.name;  // false -> 0/''/false/undefined/null
     product.price = req.body.price ?? product.price; // false -> undefined/null
 
     return res.json(product);
 };
 
-export const deleteProduct = (req, res) => {
+export const deleteProduct = (req, res, next) => {
     const id = +req.params.idx;
 
     const p = products.find(p => p.id === id);
 
     // עדיף לטפל קודם כל בשגיאות
     if (!p) {
-        res.status(404).json({ message: 'product not found' });
+        // new Error(...) - מחלקה שמורה של גאווהסקריפט שמכילה נתונים על שגיאה
+
+        return next({
+            error: new Error(`product ${id} not found!`),
+            status: 404
+        });
+        // את כל השגיאות נשלח דרך הפונקציה נקסט
+        // האוביקט יישלח למידלוואר של השגיאות
+
+        // res.status(404).json({ message: 'product not found' });
     }
     else {
         products = products.filter(p => p.id !== id);
-        res.status(204).json();
+        return res.status(204).json();
     }
 };
 

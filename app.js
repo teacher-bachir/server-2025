@@ -5,6 +5,10 @@
 import express, { json, urlencoded } from 'express';
 // ייבוא של כל הראוטרים
 import productRouter from './routes/products.router.js';
+import { sendDate } from './middlewares/print.middleware.js';
+import { errorHandling, notFound } from './middlewares/errors.middleware.js';
+import morgan from 'morgan';
+import cors from 'cors'
 
 // 3. יצירת השרת
 const app = express();
@@ -17,11 +21,15 @@ const app = express();
 app.use(json());
 app.use(urlencoded());
 
+app.use(cors());
+app.use(morgan('dev'));
+
 // 3.1 הגדרת הכתובות של השרת - endpoints
 
 // GET http://loalhost:5000/
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+app.get('/', (req, res, next) => {
+    res.send('Hello World!');
+    // next('my error!!!!!!!!!!!!!!!!!!!!');
 });
 
 // =========== כל הניתובים ==============
@@ -31,7 +39,20 @@ app.get('/', (req, res) => {
 // http://localhost:5000/products/123
 // http://localhost:5000/products/abc
 // http://localhost:5000/products/full
-app.use('/products', productRouter);
+
+// חיבור של המידלוואר לכל הראוטר - לכל הניתובים של מוצרים
+app.use('/products', sendDate, productRouter);
+
+// ניתן לגשת לכל הקבצים בתיקיה זו לפי שמם
+app.use(express.static('public'));
+
+// כאן אפשר לדעת בוודאות שלא נכנסנו לשום ניתוב/ראוטר
+app.use(notFound);
+
+// כל השגיאות שנשלח בשרת
+// יגיעו למידלוואר הזה שמגדיר ערוץ שגיאות
+// next(...) את השגיאות ע"י הפונקציה
+app.use(errorHandling);
 
 // 4. הרצת השרת על הפורט שהגדרנו
 const port = 5000;
