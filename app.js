@@ -3,15 +3,19 @@
 
 // 2. ES6 ייבוא של
 import express, { json, urlencoded } from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+
 // ייבוא של כל הראוטרים
 import productRouter from './routes/products.router.js';
 import { sendDate } from './middlewares/print.middleware.js';
 import { errorHandling, notFound } from './middlewares/errors.middleware.js';
-import morgan from 'morgan';
-import cors from 'cors'
+import { connectDB } from './config/db.js';
 
 // 3. יצירת השרת
 const app = express();
+
+connectDB();
 
 // כל השרת מקבל באדי
 // כל סוגי הבקשות

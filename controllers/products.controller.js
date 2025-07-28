@@ -1,93 +1,60 @@
 // ============== controllers - פונקציות לוגיות =================
 // למשל: חיבור לדטהבייס, הוספה/מחיקה/עדכון
-
-// אפשר כמחלקה כמו סרוויס
-/*
-class ProductController {
-    #products = [
-        { id: 10, name: "aaa", price: 12 },
-        { id: 11, name: "bbb", price: 1000 },
-        { id: 12, name: "mmm", price: 12 },
-        { id: 14, name: "aaa", price: 30 },
-    ];
-};
-export default new ProductController();
-*/
-
-// אפשר בצורה של פונקציות נפרדות
-// וייצוא כל פונקציה בנפרד
-let products = [
-    { id: 10, name: "aaa", price: 12 },
-    { id: 11, name: "bbb", price: 1000 },
-    { id: 12, name: "mmm", price: 12 },
-    { id: 14, name: "aaa", price: 30 },
-];
+import Product from '../models/product.model.js';
 
 // /products
 // /products?sort=name
 // /products?sort=price
 // /products?sort=id
-export const getAllProducts = (req, res, next) => {
-    // כאן ניתן לקבל את כל הנתונים שצורפו לבקשה דרך המידלוואר
-    console.log('getAllProducts', req.user2, req.currentDate3);
-
+export const getAllProducts = async (req, res, next) => {
     // req.query - פרמטרים אופציונליים
     // const sort = req.query.sort;
-    const { sort } = req.query;
+    // const { sort } = req.query;
 
-    // מיון על מערך חדש
-    let newP;
-    switch (sort) {
-        case 'price':
-            newP = products.toSorted((p1, p2) => p1.price - p2.price);
-            break;
-        case 'id':
-            newP = products.toSorted((p1, p2) => p1.id - p2.id);
-            break;
-        case 'name':
-            newP = products.toSorted((p1, p2) => p1.name.localeCompare(p2.name));
-            break;
-
-        default:
-            newP = products;
-            break;
-    }
-
-    // res.json - שליחת אוביקט ללקוח
-    // בד"כ נשתמש בו
-    return res.json(newP);
-};
-
-export const getProductById = (req, res, next) => {
-    const id = +req.params.id;
-    const p = products.find(p => p.id === id);
-
-    // עדיף לטפל קודם כל בשגיאות
-    if (!p) {
-        return next({
-            error: new Error(`product ${id} not found!`),
-            status: 404
-        });
-    }
-    else {
-        res.json(p);
+    // TODO: sort data
+    try {
+        // find - שליפה מהדטהבייס
+        const products = await Product.find(); // SELECT * FROM products
+        return res.json(products);
+    } catch (error) {
+        // return next({ error: error });
+        return next({ error }); // זהה לשורה שלעיל
     }
 };
 
-export const addProduct = (req, res, next) => {
-    // console.log(req.body); // כל מה שנשלח בבאדי
+export const getProductById = async (req, res, next) => {
+    // const id = req.params.id;
+    const { id } = req.params;
+    try {
+        // TODO: findOne
+        const product = await Product.findById(id);
+        if (!product) {
+            return next({
+                error: new Error(`product ${id} not found!`),
+                status: 404
+            });
+        }
+        return res.json(product);
+    } catch (error) {
+        return next({ error });
+    }
+};
 
-    // const p = { id: Date.now(), name: req.body.name, price: req.body.price };
-    const p = {
-        id: Date.now(),
-        ...req.body, // name: req.body.name, price: req.body.price 
-    };
+export const addProduct = async (req, res, next) => {
+    try {
+        // new Product({ name: 'abc', price: 100, a: 10 }) // לא יכניס תכונות שלא קיימות בסכמה
 
-    products.push(p);
+        // TODO: add complex validations 
+        const newP = new Product(req.body); // יצירת מסמך חדש "באוויר" שמתאים לסכמה
 
-    // res.status(...) - פונקציה שמגדירה סטטוס לתגובה
-    // json/send חובה לכתוב לפני ההחזרה
-    return res.status(201).json(p);
+        // שמירת המסמך החדש באוסף מוצרים
+        await newP.save();
+        // בשורה זו האוביקט מכיל את הקוד האוטומטי
+
+        return res.status(201).json(newP);
+    } catch (error) {
+        return next({ error, status: 400 });
+    }
 };
 
 // http://loalhost:5000/products/10
