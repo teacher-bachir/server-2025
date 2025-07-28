@@ -15,5 +15,8 @@ export const connectDB = async () => {
         
     } catch (error) {
         console.error(error.message);
+        process.exit(1); // סגירה של השרת כולו עם קוד שגיאה
+        // 0 - הצלחה
+        // השאר - שגיאה
     }
 };

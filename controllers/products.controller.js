@@ -83,28 +83,28 @@ export const updateProduct = (req, res, next) => {
     return res.json(product);
 };
 
-export const deleteProduct = (req, res, next) => {
-    const id = +req.params.idx;
+export const deleteProduct = async (req, res, next) => {
+    const id = req.params.idx;
 
-    const p = products.find(p => p.id === id);
+    try {
+        const p = await Product.findOne({ _id: id });
 
-    // עדיף לטפל קודם כל בשגיאות
-    if (!p) {
-        // new Error(...) - מחלקה שמורה של גאווהסקריפט שמכילה נתונים על שגיאה
-
-        return next({
-            error: new Error(`product ${id} not found!`),
-            status: 404
-        });
-        // את כל השגיאות נשלח דרך הפונקציה נקסט
-        // האוביקט יישלח למידלוואר של השגיאות
-
-        // res.status(404).json({ message: 'product not found' });
+        // עדיף לטפל קודם כל בשגיאות
+        if (!p) {
+            return next({
+                error: new Error(`product ${id} not found!`),
+                status: 404
+            });
+        }
+        else {
+            // מחיקה לפי איי די מתוך הדטהבייס
+            await Product.findByIdAndDelete(id);
+            return res.status(204).json();
+        }
+    } catch (error) {
+        next(error)
     }
-    else {
-        products = products.filter(p => p.id !== id);
-        return res.status(204).json();
-    }
+
 };
 
 /*

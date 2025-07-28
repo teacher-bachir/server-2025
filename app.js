@@ -25,7 +25,9 @@ connectDB();
 app.use(json());
 app.use(urlencoded());
 
+// cors - גישה לכל קליינט
 app.use(cors());
+// morgan - הדפסות של נתוני הבקשה-תגובה לצורך דיבאג
 app.use(morgan('dev'));
 
 // 3.1 הגדרת הכתובות של השרת - endpoints
