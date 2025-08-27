@@ -1,7 +1,6 @@
 // ============== controllers - פונקציות לוגיות =================
 // למשל: חיבור לדטהבייס, הוספה/מחיקה/עדכון
 import Product from '../models/product.model.js';
-
 // /products
 // /products?sort=name
 // /products?sort=price
@@ -10,7 +9,6 @@ export const getAllProducts = async (req, res, next) => {
     // req.query - פרמטרים אופציונליים
     // const sort = req.query.sort;
     // const { sort } = req.query;
-
     // TODO: sort data
     try {
         // find - שליפה מהדטהבייס
@@ -18,7 +16,8 @@ export const getAllProducts = async (req, res, next) => {
         return res.json(products);
     } catch (error) {
         // return next({ error: error });
-        return next({ error }); // זהה לשורה שלעיל
+        return next({ error });
+        // זהה לשורה שלעיל
     }
 };
 
@@ -102,21 +101,6 @@ export const deleteProduct = async (req, res, next) => {
             return res.status(204).json();
         }
     } catch (error) {
-        next(error)
+        next({ error })
     }
-
 };
-
-/*
-    const sortedValues = values.toSorted(פונקצית השוואה בין 2 ערכים);
-    הפונקציה מחזירה אחד מבין הערכים הבאים
-    חיובי - אם הראשון גדול מהשני
-    שלילי - אם הראשון קטן מהשני
-    אפס - אם 2 הערכים שווים
-
-    const values = [10, 10, 21, 2];
-    const sortedValues = values.toSorted((a, b) => a - b);
-    a - b = 10 - 10 = 0   (first = second)
-    a - b = 10 - 21 = -11 (first < second)
-    a - b = 21 - 2  = 19  (first > second)
-*/
