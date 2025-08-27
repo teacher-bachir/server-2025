@@ -13,6 +13,7 @@ export const getAllProducts = async (req, res, next) => {
     try {
         // find - שליפה מהדטהבייס
         const products = await Product.find(); // SELECT * FROM products
+        // const products = await Product.find({ price: 50 }); // SELECT * FROM products WHERE price = 50
         return res.json(products);
     } catch (error) {
         // return next({ error: error });
@@ -25,8 +26,8 @@ export const getProductById = async (req, res, next) => {
     // const id = req.params.id;
     const { id } = req.params;
     try {
-        // TODO: findOne
-        const product = await Product.findById(id);
+        // const product = await Product.findById(id);// SELECT * FROM products WHERE _id=id
+        const product = await Product.findOne({ _id: id });// SELECT * FROM products WHERE _id=id
         if (!product) {
             return next({
                 error: new Error(`product ${id} not found!`),
@@ -59,47 +60,53 @@ export const addProduct = async (req, res, next) => {
 // http://loalhost:5000/products/10
 // http://loalhost:5000/products/11
 // http://loalhost:5000/products/200
-export const updateProduct = (req, res, next) => {
-    // req.params - URL-אוביקט שמכיל את כל המפתחות והערכים שנשלחו ב
-    // הערכים נשלחים תמיד כמחרוזת
+export const updateProduct = async (req, res, next) => {
+    try {
+        // req.params - URL-אוביקט שמכיל את כל המפתחות והערכים שנשלחו ב
+        // הערכים נשלחים תמיד כמחרוזת
 
-    const id = +req.params.id; // + המרת מחרוזת למספר ע"י
+        const { id } = req.params; // + המרת מחרוזת למספר ע"י
 
-    const product = products.find(p => p.id === id);
+        const product = await Product.findByIdAndUpdate(id, {
+            $set: req.body, // הוספת/עדכון שדות מסוימים במסמך
+            // $unset: { price: true } // מחיקת שדות
+        },
+            {  // אוביקט עם הגדרות נוספות
+                new: true, // החזרת מסמך מעודכן
+                runValidators: true // הפעלת בדיקות תקינות
+            });
 
-    if (!product) { // לא מצא מוצר עם קוד כזה
+        if (!product) { // לא מצא מוצר עם קוד כזה
+            return next({
+                error: new Error(`product ${id} not found!`),
+                status: 404
+            });
+        }
+
+        return res.json(product);
+    } catch (error) {
         return next({
-            error: new Error(`product ${id} not found!`),
-            status: 404
+            error: error,
+            status: 400
         });
     }
-
-    // עדכון רק אם נשלח הערך - default value
-    // product.name =  req.body.name ? req.body.name : product.name;
-    product.name = req.body.name || product.name;  // false -> 0/''/false/undefined/null
-    product.price = req.body.price ?? product.price; // false -> undefined/null
-
-    return res.json(product);
 };
 
 export const deleteProduct = async (req, res, next) => {
     const id = req.params.idx;
 
     try {
-        const p = await Product.findOne({ _id: id });
+        const product = await Product.findByIdAndDelete(id);
 
         // עדיף לטפל קודם כל בשגיאות
-        if (!p) {
+        if (!product) {
             return next({
                 error: new Error(`product ${id} not found!`),
                 status: 404
             });
         }
-        else {
-            // מחיקה לפי איי די מתוך הדטהבייס
-            await Product.findByIdAndDelete(id);
-            return res.status(204).json();
-        }
+        
+        return res.status(204).json();
     } catch (error) {
         next({ error })
     }

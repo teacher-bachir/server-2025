@@ -32,7 +32,7 @@ app.use(morgan('dev'));
 
 // 3.1 הגדרת הכתובות של השרת - endpoints
 
-// GET http://loalhost:5000/
+// GET http://localhost:5000/
 app.get('/', (req, res, next) => {
     res.send('Hello World!');
     // next('my error!!!!!!!!!!!!!!!!!!!!');
