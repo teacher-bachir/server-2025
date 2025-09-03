@@ -57,9 +57,9 @@ export const addProduct = async (req, res, next) => {
     }
 };
 
-// http://loalhost:5000/products/10
-// http://loalhost:5000/products/11
-// http://loalhost:5000/products/200
+// http://localhost:5000/products/10
+// http://localhost:5000/products/11
+// http://localhost:5000/products/200
 export const updateProduct = async (req, res, next) => {
     try {
         // req.params - URL-אוביקט שמכיל את כל המפתחות והערכים שנשלחו ב
