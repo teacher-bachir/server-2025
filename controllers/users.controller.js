@@ -1,4 +1,4 @@
-import User, { generateToken } from "../models/user.model.js";
+import User, { generateToken, userJoi } from "../models/user.model.js";
 import bcrypt from 'bcryptjs';
 
 // התחברות - משתמש קיים
@@ -19,9 +19,9 @@ export const login = async (req, res, next) => {
             }
         }
 
-        return next({ error: { message: 'login failed' }, status: 404 });
+        return next({ error: { message: 'login failed' }, status: 400 });
     } catch (error) {
-        return next({ error: { message: error.message }, status: 404 });
+        return next({ error: { message: error.message }, status: 400 });
     }
 };
 

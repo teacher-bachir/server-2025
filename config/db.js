@@ -7,7 +7,7 @@ export const connectDB = async () => {
     // מחרוזת התחברות לשרת של הדטהבייס
     // בסוף המחרוזת נכתוב את שם הדטהבייס
     // אם לא קיים - ייצור חדש
-    const MONGO_URI = "mongodb://localhost:27017/storeDB";
+    const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/testDB";
 
     try {
         await mongoose.connect(MONGO_URI);

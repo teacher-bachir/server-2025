@@ -67,7 +67,7 @@ app.use(notFound);
 app.use(errorHandling);
 
 // 4. הרצת השרת על הפורט שהגדרנו
-const port = 5000;
+const port = process.env.PORT || 6000;
 app.listen(port, () => {
     // פונקציה זו מתבצעת פעם אחת, אחרי שהשרת מורץ
     console.log(`Example app listening on http://localhost:${port}`)

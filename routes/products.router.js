@@ -7,6 +7,8 @@ import { Router } from 'express'
 import { addProduct, deleteProduct, getAllProducts, getProductById, updateProduct } from '../controllers/products.controller.js';
 import { printHello } from '../middlewares/print.middleware.js';
 import { auth } from '../middlewares/auth.middleware.js';
+import { validateBody } from '../middlewares/validate.middleware.js';
+import { productJoi } from '../models/product.model.js';
 
 // 2. יצירת ראוטר חדש - למשאב בתוך הפרויקט
 // כאן לא כותבים את הניתוב הכללי
@@ -17,10 +19,10 @@ router.get('/', printHello, auth, getAllProducts);
 
 router.get('/:id', getProductById);
 
-router.post('/', addProduct);
+router.post('/', validateBody(productJoi), addProduct);
 
 // :id - יוצר משתנה בשם איי-די ששומר את הערך שנשלח ביו-אר-אל
-router.put('/:id', updateProduct);
+router.put('/:id', validateBody(productJoi), updateProduct);
 
 router.delete('/:idx', deleteProduct);
 
