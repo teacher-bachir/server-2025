@@ -5,12 +5,17 @@
 import express, { json, urlencoded } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import { config } from 'dotenv';
 
 // ייבוא של כל הראוטרים
 import productRouter from './routes/products.router.js';
+import userRouter from './routes/users.router.js';
 import { sendDate } from './middlewares/print.middleware.js';
 import { errorHandling, notFound } from './middlewares/errors.middleware.js';
 import { connectDB } from './config/db.js';
+
+// .env מרגע זה ניתן לקרוא בכל הקבצים בפרויקט את הנתונים מהקובץ
+config();
 
 // 3. יצירת השרת
 const app = express();
@@ -48,6 +53,7 @@ app.get('/', (req, res, next) => {
 
 // חיבור של המידלוואר לכל הראוטר - לכל הניתובים של מוצרים
 app.use('/products', sendDate, productRouter);
+app.use('/users', userRouter);
 
 // ניתן לגשת לכל הקבצים בתיקיה זו לפי שמם
 app.use(express.static('public'));

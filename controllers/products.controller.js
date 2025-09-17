@@ -6,6 +6,12 @@ import Product from '../models/product.model.js';
 // /products?sort=price
 // /products?sort=id
 export const getAllProducts = async (req, res, next) => {
+    const myRole = req.myUser.role;
+
+    if (myRole !== 'admin') {
+        return next({ error: new Error('רק מנהל יכול לגשת לכל המוצרים'), status: 403 })
+    }
+
     // req.query - פרמטרים אופציונליים
     // const sort = req.query.sort;
     // const { sort } = req.query;
@@ -105,7 +111,7 @@ export const deleteProduct = async (req, res, next) => {
                 status: 404
             });
         }
-        
+
         return res.status(204).json();
     } catch (error) {
         next({ error })

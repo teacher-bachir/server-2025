@@ -6,13 +6,14 @@
 import { Router } from 'express'
 import { addProduct, deleteProduct, getAllProducts, getProductById, updateProduct } from '../controllers/products.controller.js';
 import { printHello } from '../middlewares/print.middleware.js';
+import { auth } from '../middlewares/auth.middleware.js';
 
 // 2. יצירת ראוטר חדש - למשאב בתוך הפרויקט
 // כאן לא כותבים את הניתוב הכללי
 // רק את הניתוב החלקי אחרי שם המשאב - מתחיל בסלאש
 const router = Router();
 
-router.get('/', printHello, getAllProducts);
+router.get('/', printHello, auth, getAllProducts);
 
 router.get('/:id', getProductById);
 
