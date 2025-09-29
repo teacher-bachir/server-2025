@@ -4,7 +4,7 @@
 
 // 1. import - חובה בתחילת העמוד
 import { Router } from 'express'
-import { addProduct, deleteProduct, getAllProducts, getProductById, updateProduct } from '../controllers/products.controller.js';
+import { addProduct, deleteProduct, getAllProducts, getProductById, updateProduct, getFullProducts } from '../controllers/products.controller.js';
 import { printHello } from '../middlewares/print.middleware.js';
 import { auth } from '../middlewares/auth.middleware.js';
 import { validateBody } from '../middlewares/validate.middleware.js';
@@ -15,7 +15,9 @@ import { productJoi } from '../models/product.model.js';
 // רק את הניתוב החלקי אחרי שם המשאב - מתחיל בסלאש
 const router = Router();
 
-router.get('/', printHello, auth, getAllProducts);
+router.get('/', printHello, getAllProducts);
+
+router.get('/full', getFullProducts);
 
 router.get('/:id', getProductById);
 

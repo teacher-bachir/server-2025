@@ -12,6 +12,18 @@ const productSchema = new Schema({
     date: Date,
     amount: Number,
     isSale: Boolean,
+    // 1.
+    // owner מפתח זר מטבלת משתמשים
+    // ref פופיולייט עובד רק אם יש
+    owner: { type: Schema.Types.ObjectId, ref: 'users', require: true }
+    // 2.
+    // בשיטה זו נדאג להכניס גם את הקוד וגם את שם המשתמש
+    // owner: {
+    //     // ref בתוך האוביקט נגדיר מפתח זר עם
+    //     // הקוד של היוזר
+    //     _id: { type: Schema.Types.ObjectId, ref: 'users'},
+    //     username: String
+    // }
 });
 
 // בדיקות תקינות

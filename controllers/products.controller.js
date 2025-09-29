@@ -6,11 +6,10 @@ import Product from '../models/product.model.js';
 // /products?sort=price
 // /products?sort=id
 export const getAllProducts = async (req, res, next) => {
-    const myRole = req.myUser.role;
-
-    if (myRole !== 'admin') {
-        return next({ error: new Error('רק מנהל יכול לגשת לכל המוצרים'), status: 403 })
-    }
+    // const myRole = req.myUser.role;
+    // if (myRole !== 'admin') {
+    //     return next({ error: new Error('רק מנהל יכול לגשת לכל המוצרים'), status: 403 })
+    // }
 
     // req.query - פרמטרים אופציונליים
     // const sort = req.query.sort;
@@ -27,6 +26,21 @@ export const getAllProducts = async (req, res, next) => {
         // זהה לשורה שלעיל
     }
 };
+
+export const getFullProducts = async (req, res, next) => {
+    try {
+        // populate - like SQL JOIN
+        // owner מצרף את הטבלה שהמפתח הזר שלה הוא
+        // במקום להציג רק קוד מציג אוביקט עם כל הנתונים
+        // 1.
+        const products = await Product.find().populate('owner', 'username email -_id');
+        // 2.
+        // const products = await Product.find().populate('owner._id', 'username email -_id');
+        res.json(products);
+    } catch (error) {
+        return next({ error });
+    }
+}
 
 export const getProductById = async (req, res, next) => {
     // const id = req.params.id;
