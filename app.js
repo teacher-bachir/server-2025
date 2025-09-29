@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { config } from 'dotenv';
 
+
 // ייבוא של כל הראוטרים
 import productRouter from './routes/products.router.js';
 import userRouter from './routes/users.router.js';
